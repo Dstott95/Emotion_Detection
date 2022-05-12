@@ -135,10 +135,10 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     # Load datasets
-    train_dataset = EmotionDataset(r"C:\\Users\\darre\\PycharmProjects\\Emotion_Classifier\\bimodal_data\\valence\\train.csv", sequence_length=N_SEQUENCE)
+    train_dataset = EmotionDataset(r"train_with_aro_scores.csv", sequence_length=N_SEQUENCE)
     train_dataset.reshape()
 
-    test_dataset = EmotionDataset(r"C:\\Users\\darre\\PycharmProjects\\Emotion_Classifier\\bimodal_data\\valence\\test.csv", sequence_length=N_SEQUENCE)
+    test_dataset = EmotionDataset(r"test_with_aro_scores.csv", sequence_length=N_SEQUENCE)
     test_dataset.reshape()
 
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
@@ -155,16 +155,16 @@ if __name__ == '__main__':
     train_losses = []
     train_acc = []
 
-    ''''# Train the model
+    # Train the model
     def train(epoch):
         model.train()
         n_correct = 0
         n_samples = 0
         running_loss = 0
 
-        for i, sample in enumerate(train_loader):
+        for sample in train_loader:
             data_a, data_f, labels = sample[0].cuda(), sample[1].cuda(), sample[2].cuda()
-            #print(labels)
+          
             # Forward pass
             outputs = model(data_a, data_f)
             loss = criterion(outputs, labels)
@@ -231,29 +231,6 @@ if __name__ == '__main__':
             frac_left = (1 - percent_complete) / percent_complete
             time_left = (time.time() - train_start_time) * frac_left
             print(f"Epoch [{epoch + 1}/{N_EPOCHS}]")
-            print(f"Estimated time left: {time_left:.0f}s")'''
-
-    n_total_steps = len(train_loader)
-    train_start_time = time.time()
-    for epoch in range(N_EPOCHS):
-        for i, sample in enumerate(train_loader):
-            data_a, data_f, labels = sample[0].cuda(), sample[1].cuda(), sample[2].cuda()
-
-            # Forward pass
-            outputs = model(data_a, data_f)
-            loss = criterion(outputs, labels)
-
-            # Backward and optimize
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-        # below is used to display progress and estimated time left while training
-        if (epoch + 1) % 1 == 0:
-            percent_complete = (epoch + 1) / N_EPOCHS
-            frac_left = (1 - percent_complete) / percent_complete
-            time_left = (time.time() - train_start_time) * frac_left
-            print(f'Epoch [{epoch + 1}/{N_EPOCHS}], Loss: {loss.item():.4f}')
             print(f"Estimated time left: {time_left:.0f}s")
 
     with torch.no_grad():
@@ -286,14 +263,14 @@ if __name__ == '__main__':
     print("time elapsed: {:.2f}s".format(time.time() - start_time))
 
 
-    '''plt.plot(train_acc, "-")
+    plt.plot(train_acc, "-")
     plt.plot(test_acc, "-")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.legend(["Train", "Test"])
     plt.title("Train vs Test Accuracy")
     plt.savefig("bimodal_class_accuracies.svg")
-    plt.show()'''
+    plt.show()
 
     plt.plot(train_losses, "-")
     plt.plot(test_losses, "-")
@@ -306,7 +283,7 @@ if __name__ == '__main__':
 
     print("time elapsed: {:.2f}s".format(time.time() - start_time))
     torch.save(model.state_dict(),
-               r"C:\\Users\\darre\\PycharmProjects\\Emotion_Classifier\\bimodal_data\\state_dict_.pt")
+               r"LF_2dval_state_dict.pt")
 
 
 
